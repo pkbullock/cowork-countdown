@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cowork Credit Renewal Countdown</title>
+  <meta name="description" content="Live countdown to the start of next month when Cowork Credits renew." />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-slate-100 flex flex-col items-center justify-center p-6 font-sans antialiased">
+  <main class="w-full max-w-3xl text-center">
+    <p class="uppercase tracking-[0.3em] text-indigo-300 text-sm font-semibold">Cowork Credits</p>
+    <h1 class="mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight">Credit renewal countdown</h1>
+    <p class="mt-4 text-slate-300 text-lg">
+      Credits renew on <span id="target-date" class="font-semibold text-white">&hellip;</span>
+    </p>
+
+    <div id="countdown" class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+        <div id="days" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
+        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Days</div>
+      </div>
+      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+        <div id="hours" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
+        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Hours</div>
+      </div>
+      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+        <div id="minutes" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
+        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Minutes</div>
+      </div>
+      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+        <div id="seconds" class="text-5xl sm:text-6xl font-bold tabular-nums text-indigo-300">--</div>
+        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Seconds</div>
+      </div>
+    </div>
+
+    <div class="mt-10 mx-auto max-w-xl">
+      <div class="flex justify-between text-xs text-slate-400 mb-2">
+        <span id="month-start">&nbsp;</span>
+        <span id="month-progress-label">&nbsp;</span>
+      </div>
+      <div id="month-progress-bar" class="h-2 w-full rounded-full bg-white/10 overflow-hidden" role="progressbar" aria-label="Month elapsed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="month-progress" class="h-full rounded-full bg-gradient-to-r from-indigo-400 to-fuchsia-400 transition-all duration-1000" style="width: 0%"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="mt-12 text-xs text-slate-500">
+    Times shown in your local time zone (<span id="timezone"></span>).
+  </footer>
+
+  <script>
+    (function () {
+      const pad = (n) => String(n).padStart(2, "0");
+      const el = (id) => document.getElementById(id);
+      const dateFmt = new Intl.DateTimeFormat(undefined, {
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+      });
+
+      // Start of next month (e.g. Oct 1, Nov 1) at local midnight.
+      function nextRenewal(now) {
+        return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      }
+
+      function tick() {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        const target = nextRenewal(now);
+        const diff = Math.max(0, target - now);
+
+        const totalSeconds = Math.floor(diff / 1000);
+        el("days").textContent = Math.floor(totalSeconds / 86400);
+        el("hours").textContent = pad(Math.floor((totalSeconds % 86400) / 3600));
+        el("minutes").textContent = pad(Math.floor((totalSeconds % 3600) / 60));
+        el("seconds").textContent = pad(totalSeconds % 60);
+
+        el("target-date").textContent = dateFmt.format(target);
+
+        const pct = ((now - start) / (target - start)) * 100;
+        el("month-progress").style.width = pct.toFixed(2) + "%";
+        el("month-progress-bar").setAttribute("aria-valuenow", pct.toFixed(1));
+        el("month-start").textContent = start.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+        el("month-progress-label").textContent = pct.toFixed(1) + "% of month elapsed";
+      }
+
+      el("timezone").textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || "local";
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
