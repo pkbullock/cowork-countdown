@@ -15,7 +15,7 @@
       Credits renew on <span id="target-date" class="font-semibold text-white">&hellip;</span>
     </p>
 
-    <div id="countdown" class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4" aria-live="polite">
+    <div id="countdown" class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
       <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
         <div id="days" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
         <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Days</div>
@@ -39,7 +39,7 @@
         <span id="month-start">&nbsp;</span>
         <span id="month-progress-label">&nbsp;</span>
       </div>
-      <div class="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+      <div id="month-progress-bar" class="h-2 w-full rounded-full bg-white/10 overflow-hidden" role="progressbar" aria-label="Month elapsed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <div id="month-progress" class="h-full rounded-full bg-gradient-to-r from-indigo-400 to-fuchsia-400 transition-all duration-1000" style="width: 0%"></div>
       </div>
     </div>
@@ -78,6 +78,7 @@
 
         const pct = ((now - start) / (target - start)) * 100;
         el("month-progress").style.width = pct.toFixed(2) + "%";
+        el("month-progress-bar").setAttribute("aria-valuenow", pct.toFixed(1));
         el("month-start").textContent = start.toLocaleDateString(undefined, { month: "short", day: "numeric" });
         el("month-progress-label").textContent = pct.toFixed(1) + "% of month elapsed";
       }
