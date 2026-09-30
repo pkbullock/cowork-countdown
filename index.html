@@ -6,41 +6,98 @@
   <title>Cowork Credit Renewal Countdown</title>
   <meta name="description" content="Live countdown to the start of next month when Cowork Credits renew." />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes confetti-fall {
+      0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate3d(var(--drift, 0), 110vh, 0) rotate(var(--spin, 720deg)); opacity: 0.9; }
+    }
+    @keyframes celebrate-pop {
+      0%, 100% { transform: scale(1) rotate(-2deg); }
+      50%      { transform: scale(1.06) rotate(2deg); }
+    }
+    @keyframes rainbow-shift {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    [hidden] { display: none !important; }
+    #confetti {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .confetti-piece {
+      position: absolute;
+      top: 0;
+      will-change: transform;
+      animation-name: confetti-fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    .celebrate-pop { animation: celebrate-pop 1.6s ease-in-out infinite; }
+    .rainbow-text {
+      background-image: linear-gradient(90deg, #f472b6, #facc15, #4ade80, #38bdf8, #a78bfa, #f472b6);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow-shift 3s linear infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .confetti-piece, .celebrate-pop, .rainbow-text { animation: none; }
+      .confetti-piece { display: none; }
+    }
+  </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-slate-100 flex flex-col items-center justify-center p-6 font-sans antialiased">
-  <main class="w-full max-w-3xl text-center">
+  <div id="confetti" aria-hidden="true" hidden></div>
+
+  <main class="relative w-full max-w-3xl text-center">
     <p class="uppercase tracking-[0.3em] text-indigo-300 text-sm font-semibold">Cowork Credits</p>
-    <h1 class="mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight">Credit renewal countdown</h1>
-    <p class="mt-4 text-slate-300 text-lg">
-      Credits renew on <span id="target-date" class="font-semibold text-white">&hellip;</span>
-    </p>
 
-    <div id="countdown" class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
-        <div id="days" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
-        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Days</div>
-      </div>
-      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
-        <div id="hours" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
-        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Hours</div>
-      </div>
-      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
-        <div id="minutes" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
-        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Minutes</div>
-      </div>
-      <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
-        <div id="seconds" class="text-5xl sm:text-6xl font-bold tabular-nums text-indigo-300">--</div>
-        <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Seconds</div>
-      </div>
-    </div>
+    <section id="celebration" aria-live="polite" hidden>
+      <div class="mt-6 text-7xl sm:text-8xl celebrate-pop" aria-hidden="true">🎉🏆🎊</div>
+      <h1 class="mt-6 text-5xl sm:text-7xl font-extrabold tracking-tight rainbow-text">Congratulations!</h1>
+      <p class="mt-6 text-2xl sm:text-3xl font-bold text-white">You made it to the finish line!</p>
+      <p class="mt-4 text-lg text-slate-200">
+        Your Cowork Credits have renewed today. Enjoy the fresh start &mdash; the countdown to the next renewal begins tomorrow.
+      </p>
+    </section>
 
-    <div class="mt-10 mx-auto max-w-xl">
-      <div class="flex justify-between text-xs text-slate-400 mb-2">
-        <span id="month-start">&nbsp;</span>
-        <span id="month-progress-label">&nbsp;</span>
+    <div id="countdown-view">
+      <h1 class="mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight">Credit renewal countdown</h1>
+      <p class="mt-4 text-slate-300 text-lg">
+        Credits renew on <span id="target-date" class="font-semibold text-white">&hellip;</span>
+      </p>
+
+      <div id="countdown" class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+          <div id="days" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
+          <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Days</div>
+        </div>
+        <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+          <div id="hours" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
+          <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Hours</div>
+        </div>
+        <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+          <div id="minutes" class="text-5xl sm:text-6xl font-bold tabular-nums">--</div>
+          <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Minutes</div>
+        </div>
+        <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 backdrop-blur p-6 shadow-xl">
+          <div id="seconds" class="text-5xl sm:text-6xl font-bold tabular-nums text-indigo-300">--</div>
+          <div class="mt-2 text-xs uppercase tracking-widest text-slate-400">Seconds</div>
+        </div>
       </div>
-      <div id="month-progress-bar" class="h-2 w-full rounded-full bg-white/10 overflow-hidden" role="progressbar" aria-label="Month elapsed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <div id="month-progress" class="h-full rounded-full bg-gradient-to-r from-indigo-400 to-fuchsia-400 transition-all duration-1000" style="width: 0%"></div>
+
+      <div class="mt-10 mx-auto max-w-xl">
+        <div class="flex justify-between text-xs text-slate-400 mb-2">
+          <span id="month-start">&nbsp;</span>
+          <span id="month-progress-label">&nbsp;</span>
+        </div>
+        <div id="month-progress-bar" class="h-2 w-full rounded-full bg-white/10 overflow-hidden" role="progressbar" aria-label="Month elapsed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="month-progress" class="h-full rounded-full bg-gradient-to-r from-indigo-400 to-fuchsia-400 transition-all duration-1000" style="width: 0%"></div>
+        </div>
+        <p id="positive-message" class="mt-6 text-lg font-medium text-fuchsia-200">&nbsp;</p>
       </div>
     </div>
   </main>
@@ -57,6 +114,56 @@
         weekday: "long", year: "numeric", month: "long", day: "numeric",
       });
 
+      const params = new URLSearchParams(window.location.search);
+      const forceRenewal = (params.get("renewal") || "").toLowerCase() === "true";
+
+      const positiveMessages = [
+        "🏃 You're pacing like a champion — keep that stride!",
+        "🥇 Leading the pack! The finish line is getting closer.",
+        "🚀 Full speed ahead — you're crushing this lap!",
+        "💪 Strong and steady wins the race. You've got this!",
+        "🏁 Every second counts, and you're making them all count!",
+      ];
+      el("positive-message").textContent =
+        positiveMessages[Math.floor(Math.random() * positiveMessages.length)];
+
+      const confettiColors = ["#f472b6", "#facc15", "#4ade80", "#38bdf8", "#a78bfa", "#fb923c", "#f87171"];
+      function startConfetti() {
+        const container = el("confetti");
+        if (container.childElementCount) return;
+        const count = 150;
+        for (let i = 0; i < count; i++) {
+          const piece = document.createElement("span");
+          const size = 6 + Math.random() * 8;
+          piece.className = "confetti-piece";
+          piece.style.left = Math.random() * 100 + "vw";
+          piece.style.width = size + "px";
+          piece.style.height = size * (Math.random() < 0.5 ? 0.4 : 1) + "px";
+          piece.style.background = confettiColors[i % confettiColors.length];
+          piece.style.borderRadius = Math.random() < 0.3 ? "50%" : "2px";
+          piece.style.animationDuration = 3 + Math.random() * 4 + "s";
+          piece.style.animationDelay = -Math.random() * 7 + "s";
+          piece.style.setProperty("--drift", (Math.random() * 20 - 10) + "vw");
+          piece.style.setProperty("--spin", (360 + Math.random() * 1080) * (Math.random() < 0.5 ? -1 : 1) + "deg");
+          container.appendChild(piece);
+        }
+        container.hidden = false;
+      }
+      function stopConfetti() {
+        const container = el("confetti");
+        container.hidden = true;
+        container.replaceChildren();
+      }
+
+      let celebrating = null;
+      function setCelebrating(on) {
+        if (on === celebrating) return;
+        celebrating = on;
+        el("celebration").hidden = !on;
+        el("countdown-view").hidden = on;
+        if (on) startConfetti(); else stopConfetti();
+      }
+
       // Start of next month (e.g. Oct 1, Nov 1) at local midnight.
       function nextRenewal(now) {
         return new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -64,6 +171,10 @@
 
       function tick() {
         const now = new Date();
+        // Renewal day (the 1st) is celebrated all day; the countdown resumes on the 2nd.
+        setCelebrating(forceRenewal || now.getDate() === 1);
+        if (celebrating) return;
+
         const start = new Date(now.getFullYear(), now.getMonth(), 1);
         const target = nextRenewal(now);
         const diff = Math.max(0, target - now);
