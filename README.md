@@ -10,3 +10,9 @@ The site is a single static page (`index.html`) styled with [Tailwind CSS](https
 - Publish it with GitHub Pages (Settings → Pages → deploy from the default branch root).
 
 The countdown updates every second and targets midnight on the 1st of the next month (e.g. Oct 1, Nov 1) in the viewer's local time zone, rolling over automatically each month.
+
+## Positivity features
+
+- While counting down, one of five upbeat "you're winning the race" messages is picked at random on page load and shown below the progress bar.
+- On renewal day (the 1st of the month) the countdown and progress bar are hidden and replaced by a colourful confetti celebration. The countdown to the next renewal resumes on the 2nd. Confetti and animations are turned off if your system asks for reduced motion.
+- To preview the celebration on any day, add `?renewal=true` to the URL (e.g. http://localhost:8000/?renewal=true).
